@@ -21,15 +21,34 @@ class ObfuscateView extends PolymerElement {
 </style>
 
 <vaadin-vertical-layout id="content_container">
-    <h3>Upload file or folder</h3>
-    <vaadin-horizontal-layout id="file_upload_container" theme="spacing">
-        <vaadin-text-field id="fileName"></vaadin-text-field>
-        <vaadin-upload></vaadin-upload>
-        <vaadin-button theme="primary" id="browse">
-            Browse
+    <h1>Step 1:</h1>
+    <vaadin-horizontal-layout id="upload_container" theme="spacing">
+        <vaadin-upload id="upload" accept=".class" max-file-size="100000000">
+            <span slot="drop-label" style="">Drop files or folder here</span>
+        </vaadin-upload>
+    </vaadin-horizontal-layout>
+    <h1>Step 2:</h1>
+    <vaadin-horizontal-layout id="compare_container">
+        <vaadin-text-area id="before"></vaadin-text-area>
+        <vaadin-text-area id="after"></vaadin-text-area>
+    </vaadin-horizontal-layout>
+    <h1>Step 3:</h1>
+    <vaadin-horizontal-layout id="download_container">
+        <vaadin-button id="download" theme="primary">
+            <iron-icon icon="vaadin:download-alt" slot="prefix"></iron-icon>
+            Download Files
         </vaadin-button>
     </vaadin-horizontal-layout>
 </vaadin-vertical-layout>
+
+<script>
+  customElements.whenDefined('vaadin-upload').then(function() {
+    const upload = document.querySelector('vaadin-upload');
+    upload.addEventListener('file-reject', function(event) {
+      window.alert(event.detail.file.name + ' error: ' + event.detail.error);
+    });
+  });
+</script>
 
 `;
   }
