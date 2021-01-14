@@ -10,7 +10,7 @@ class AboutView extends PolymerElement {
         }
       </style>
 
-      <div>Content placeholder</div>
+      <div>Test</div>
     `;
   }
 
