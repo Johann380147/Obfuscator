@@ -3,13 +3,15 @@ version: 0.2
 phases:
   install:
     commands:
-      - echo installing maven...
+      - echo Installing maven...
       - yum update -y
       - yum install -y maven
   build:
     commands:
-      - echo building
+      - echo Installing dependencies...
       - mvn install
+      - echo Generating artifacts...
+      - mvn clean package
 artifacts:
   files:
     - target/*.jar
