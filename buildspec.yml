@@ -4,17 +4,19 @@ phases:
   install:
     commands:
       - echo Installing maven...
-      - yum update -y
       - yum install -y maven
-  build:
-    commands:
       - echo Installing dependencies...
       - mvn install
+  build:
+    commands:
       - echo Generating artifacts...
       - mvn clean package
+  post_build:
+    commands:
+      - mv target/*.jar app.jar
 artifacts:
   files:
-    - target/*.jar
+    - app.jar
   discard-paths: yes
 cache:
   paths:
