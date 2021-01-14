@@ -1,7 +1,5 @@
 version: 0.2
-env:
-  variables:
-    JAVA_HOME: "/usr/lib/jvm/java-11-amazon-corretto.x86_64"
+
 phases:
   install:
     commands:
