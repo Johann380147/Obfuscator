@@ -53,6 +53,8 @@ public class ObfuscateView extends PolymerTemplate<TemplateModel> {
     private HorizontalLayout compareContainer;
     @Id("download_container")
     private HorizontalLayout downloadContainer;
+    @Id("footer_container")
+    private HorizontalLayout footer_container;
     @Id("upload")
     private Upload upload;
     @Id("before")
@@ -66,16 +68,15 @@ public class ObfuscateView extends PolymerTemplate<TemplateModel> {
 
     public ObfuscateView(JavaCodeService javaCodeService) {
         container.setWidthFull();
-        container.setHeightFull();
         container.setAlignItems(FlexComponent.Alignment.CENTER);
         uploadContainer.setWidthFull();
         uploadContainer.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
         compareContainer.setWidthFull();
-        compareContainer.setMinHeight("400px");
-        compareContainer.setHeight("50%");
+        compareContainer.setHeight("400px");
         compareContainer.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
         downloadContainer.setWidthFull();
         downloadContainer.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        footer_container.setHeight("50px");
 
         upload.setWidth("50%");
         before.setWidth("25%");

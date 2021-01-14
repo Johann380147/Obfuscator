@@ -39,6 +39,8 @@ class ObfuscateView extends PolymerElement {
             Download Files
         </vaadin-button>
     </vaadin-horizontal-layout>
+    <vaadin-horizontal-layout id="footer_container">
+    </vaadin-horizontal-layout>
 </vaadin-vertical-layout>
 
 <script>
