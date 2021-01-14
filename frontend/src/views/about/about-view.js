@@ -10,7 +10,7 @@ class AboutView extends PolymerElement {
         }
       </style>
 
-      <div>Test</div>
+      <div>Test AGN</div>
     `;
   }
 
