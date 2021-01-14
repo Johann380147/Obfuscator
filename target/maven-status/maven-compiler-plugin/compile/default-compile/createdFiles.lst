@@ -1,0 +1,9 @@
+com\company\application\views\about\AboutView$AboutViewModel.class
+com\company\application\Application.class
+com\company\application\views\about\AboutView.class
+com\company\application\data\AbstractEntity.class
+com\company\application\views\main\MainView.class
+com\company\application\views\obfuscate\ObfuscateView.class
+com\company\application\data\service\JavaCodeRepository.class
+com\company\application\data\entity\JavaCode.class
+com\company\application\data\service\JavaCodeService.class
