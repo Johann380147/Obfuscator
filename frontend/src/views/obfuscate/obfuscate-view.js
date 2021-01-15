@@ -1,12 +1,4 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import '@vaadin/vaadin-form-layout/src/vaadin-form-layout.js';
-import '@vaadin/vaadin-button/src/vaadin-button.js';
-import '@vaadin/vaadin-text-field/src/vaadin-email-field.js';
-import '@vaadin/vaadin-text-field/src/vaadin-text-field.js';
-import '@vaadin/vaadin-custom-field/src/vaadin-custom-field.js';
-import '@vaadin/vaadin-ordered-layout/src/vaadin-horizontal-layout.js';
-import '@vaadin/vaadin-combo-box/src/vaadin-combo-box.js';
-import '@vaadin/vaadin-date-picker/src/vaadin-date-picker.js';
 
 class ObfuscateView extends PolymerElement {
 
@@ -21,18 +13,39 @@ class ObfuscateView extends PolymerElement {
 </style>
 
 <vaadin-vertical-layout id="content_container">
-    <h1>Step 1:</h1>
+    <h1>Step 1: Upload files</h1>
     <vaadin-horizontal-layout id="upload_container" theme="spacing">
         <vaadin-upload id="upload" accept=".class" max-file-size="100000000">
             <span slot="drop-label" style="">Drop files or folder here</span>
         </vaadin-upload>
     </vaadin-horizontal-layout>
-    <h1>Step 2:</h1>
+    <h1>Step 2: Select obfuscation techniques</h1>
+    <vaadin-horizontal-layout id="technique_container">
+        <vaadin-vertical-layout>
+            <vaadin-checkbox id="technique1">Technique 1</vaadin-checkbox>
+            <vaadin-checkbox id="technique2">Technique 2</vaadin-checkbox>
+            <vaadin-checkbox id="technique3">Technique 3</vaadin-checkbox>
+        </vaadin-vertical-layout>
+        <vaadin-vertical-layout>
+            <vaadin-checkbox id="technique4">Technique 4</vaadin-checkbox>
+            <vaadin-checkbox id="technique5">Technique 5</vaadin-checkbox>
+            <vaadin-checkbox id="technique6">Technique 6</vaadin-checkbox>
+        </vaadin-vertical-layout>
+    </vaadin-horizontal-layout>
+    <h1>Step 3: Review Changes</h1>
+    <vaadin-horizontal-layout style="width=100%; align-content=left;">
+        <vaadin-list-box>
+           <vaadin-item>File 1</vaadin-item>
+           <vaadin-item>File 2</vaadin-item>
+           <vaadin-item>File 3</vaadin-item>
+        </vaadin-list-box>
+    </vaadin-horizontal-layout>
     <vaadin-horizontal-layout id="compare_container">
         <vaadin-text-area id="before"></vaadin-text-area>
+        <iron-icon icon="vaadin:arrow-right"></iron-icon>
         <vaadin-text-area id="after"></vaadin-text-area>
     </vaadin-horizontal-layout>
-    <h1>Step 3:</h1>
+    <h1>Step 4: Download</h1>
     <vaadin-horizontal-layout id="download_container">
         <vaadin-button id="download" theme="primary">
             <iron-icon icon="vaadin:download-alt" slot="prefix"></iron-icon>
@@ -42,15 +55,6 @@ class ObfuscateView extends PolymerElement {
     <vaadin-horizontal-layout id="footer_container">
     </vaadin-horizontal-layout>
 </vaadin-vertical-layout>
-
-<script>
-  customElements.whenDefined('vaadin-upload').then(function() {
-    const upload = document.querySelector('vaadin-upload');
-    upload.addEventListener('file-reject', function(event) {
-      window.alert(event.detail.file.name + ' error: ' + event.detail.error);
-    });
-  });
-</script>
 
 `;
   }

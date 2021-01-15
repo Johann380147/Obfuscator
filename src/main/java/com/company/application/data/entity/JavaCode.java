@@ -1,11 +1,11 @@
 package com.company.application.data.entity;
 
 import javax.persistence.Entity;
-
+import javax.persistence.Table;
 import com.company.application.data.AbstractEntity;
-import java.time.LocalDate;
 
 @Entity
+@Table(name="repository")
 public class JavaCode extends AbstractEntity {
 
     private String code;
