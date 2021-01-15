@@ -1,4 +1,16 @@
-#technique_container {
+#main_container {
+}
+
+.header-button {
+    font-size: 28px;
     width: 100%;
-    justify-content: space-around;
+    height: auto;
+}
+
+.checkbox-container {
+    align-items: center;
+}
+
+#file_list {
+    margin-left: 10%;
 }

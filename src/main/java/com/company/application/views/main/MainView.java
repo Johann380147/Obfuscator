@@ -32,25 +32,35 @@ import com.company.application.views.obfuscate.ObfuscateView;
 @PWA(name = "Obfuscator", shortName = "Obfuscator", enableInstallPrompt = false)
 @JsModule("./styles/shared-styles.js")
 public class MainView extends AppLayout {
-
+    private static MainView mainView = null;
     private final Tabs menu;
-    public final VerticalLayout progress;
+    private final ProgressBar progress;
 
     public MainView() {
-        HorizontalLayout header = createHeader();
         menu = createMenuTabs();
-        progress = createProgressBar();
-        addToNavbar(createTopBar(header, progress));
+        HorizontalLayout header = createHeader();
+        VerticalLayout bar = createProgressBar();
+        progress = (ProgressBar) bar.getChildren().filter(child -> child.getId().get().equals("progress")).findFirst().get();
+        mainView = this;
+        addToNavbar(createTopBar(header, bar));
     }
 
-    private VerticalLayout createTopBar(HorizontalLayout header, VerticalLayout progress) {
+    public static MainView getInstance() {
+        return mainView;
+    }
+
+    public void setProgress(int value) {
+        progress.setValue(value);
+    }
+
+    private VerticalLayout createTopBar(HorizontalLayout header, VerticalLayout bar) {
         VerticalLayout layout = new VerticalLayout();
         layout.getThemeList().add("dark");
         layout.setWidthFull();
         layout.setSpacing(false);
         layout.setPadding(false);
         layout.setAlignItems(FlexComponent.Alignment.CENTER);
-        layout.add(header, progress);
+        layout.add(header, bar);
         return layout;
     }
 
@@ -72,7 +82,7 @@ public class MainView extends AppLayout {
         return header;
     }
 
-    private static VerticalLayout createProgressBar() {
+    private VerticalLayout createProgressBar() {
         final VerticalLayout layout = new VerticalLayout();
         layout.setId("progress_layout");
         layout.setWidth("50%");
@@ -111,7 +121,7 @@ public class MainView extends AppLayout {
         bar.setWidth("100%");
         bar.setMin(0);
         bar.setMax(4);
-        bar.setValue(3);
+        bar.setValue(1);
 
         layout.add(labels, bar);
         return layout;
