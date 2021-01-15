@@ -2,15 +2,11 @@ version: 0.2
 
 phases:
   install:
-    commands:
-      - echo Installing maven...
-      - yum install -y maven
-      - echo Installing dependencies...
-      - mvn install
+    runtime-versions:
+      java: corretto11
   build:
     commands:
-      - echo Generating artifacts...
-      - mvn clean package -Pproduction
+      - mvn clean install
   post_build:
     commands:
       - mv target/*.jar app.jar
@@ -20,4 +16,4 @@ artifacts:
   discard-paths: yes
 cache:
   paths:
-    - '/root/.m2/**/*'
+    - '~/.m2/**/*'
