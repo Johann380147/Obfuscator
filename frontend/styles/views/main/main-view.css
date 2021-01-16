@@ -27,10 +27,7 @@ vaadin-app-layout[dir='rtl'] vaadin-horizontal-layout #header img#avatar {
     justify-content: space-around;
 }
 
-#progress_label_text_1,
-#progress_label_text_2,
-#progress_label_text_3,
-#progress_label_text_4 {
+.progress_label_text {
     display: inline-block;
     margin-left: 3px;
 }

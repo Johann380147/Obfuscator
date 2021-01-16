@@ -19,7 +19,7 @@ import java.util.HashMap;
 
 
 @CssImport("./styles/views/obfuscate/obfuscate-view.css")
-public class ObfuscateView extends Div {
+public class ObfuscateView extends VerticalLayout {
 
     private final HorizontalLayout uploadContainer;
     private final HorizontalLayout techniqueContainer;
@@ -32,10 +32,8 @@ public class ObfuscateView extends Div {
     private final TextArea after = new TextArea();
     private final Button download = new Button();
 
-    private final Button h1;
-    private final Button h2;
-    private final Button h3;
-    private final Button h4;
+    private final Button previous = new Button("Previous");
+    private final Button next = new Button("Next");
 
     public ObfuscateView() {
         uploadContainer = createUploadLayout();
@@ -43,35 +41,30 @@ public class ObfuscateView extends Div {
         reviewContainer = createReviewLayout();
         downloadContainer = createDownloadLayout();
 
-        h1 = createHeaderButton("Step 1: Upload files");
-        h2 = createHeaderButton("Step 2: Select obfuscation techniques");
-        h3 = createHeaderButton("Step 3: Review Changes");
-        h4 = createHeaderButton("Step 4: Download");
-
-        VerticalLayout container = new VerticalLayout();
-        container.setWidthFull();
-        container.setAlignItems(FlexComponent.Alignment.CENTER);
-        container.add(
-                createMarginLayout(),
-                h1, uploadContainer,
-                h2, techniqueContainer,
-                h3, reviewContainer,
-                h4, downloadContainer,
-                createMarginLayout());
+        uploadContainer.setId("1");
+        techniqueContainer.setId("2");
+        reviewContainer.setId("3");
+        downloadContainer.setId("4");
 
         this.setId("main_container");
-        this.add(container);
-
-        InitListeners();
+        this.setWidthFull();
+        this.setHeightFull();
+        this.add(
+                createNavigationLayout(),
+                createMarginLayout(Alignment.START),
+                uploadContainer,
+                techniqueContainer,
+                reviewContainer,
+                downloadContainer,
+                createMarginLayout(Alignment.END));
     }
 
     public ArrayList<Checkbox> setTechniques(HashMap<String, Boolean> techniques) {
         if (techniques == null || techniques.isEmpty()) return null;
 
         ArrayList<Checkbox> checkboxes = new ArrayList<>();
+        VerticalLayout checkboxContainer = createCheckBoxContainer();
 
-        VerticalLayout checkboxContainer = new VerticalLayout();
-        checkboxContainer.addClassName("checkbox-container");
         techniqueContainer.removeAll();
         techniqueContainer.add(checkboxContainer);
         for (String key : techniques.keySet()) {
@@ -80,7 +73,7 @@ public class ObfuscateView extends Div {
                 checkboxContainer.add(checkbox);
             }
             else {
-                checkboxContainer = new VerticalLayout();
+                checkboxContainer = createCheckBoxContainer();
                 checkboxContainer.add(checkbox);
                 techniqueContainer.add(checkboxContainer);
             }
@@ -90,20 +83,12 @@ public class ObfuscateView extends Div {
         return checkboxes;
     }
 
-    public Button getH1() {
-        return h1;
+    public Button getPrevious() {
+        return previous;
     }
 
-    public Button getH2() {
-        return h2;
-    }
-
-    public Button getH3() {
-        return h3;
-    }
-
-    public Button getH4() {
-        return h4;
+    public Button getNext() {
+        return next;
     }
 
     public HorizontalLayout getUploadContainer() {
@@ -143,10 +128,6 @@ public class ObfuscateView extends Div {
         after.setValue(text);
     }
 
-    private void InitListeners() {
-
-    }
-
     private HorizontalLayout createUploadLayout() {
         upload.setAcceptedFileTypes(".class");
         upload.setDropLabel(new Label("Drop \".class\" files here"));
@@ -155,7 +136,7 @@ public class ObfuscateView extends Div {
 
         HorizontalLayout layout = new HorizontalLayout();
         layout.setWidthFull();
-        layout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        layout.setJustifyContentMode(JustifyContentMode.CENTER);
         layout.setVisible(true);
         layout.add(upload);
 
@@ -164,7 +145,6 @@ public class ObfuscateView extends Div {
 
     private HorizontalLayout createTechniqueLayout() {
         HorizontalLayout layout = new HorizontalLayout();
-        layout.setJustifyContentMode(FlexComponent.JustifyContentMode.EVENLY);
         layout.setVisible(false);
 
         return layout;
@@ -184,12 +164,13 @@ public class ObfuscateView extends Div {
         HorizontalLayout compareLayout = new HorizontalLayout();
         compareLayout.setWidthFull();
         compareLayout.setHeight("400px");
-        compareLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        compareLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        compareLayout.setAlignItems(Alignment.CENTER);
+        compareLayout.setJustifyContentMode(JustifyContentMode.CENTER);
         compareLayout.add(before, after);
 
         VerticalLayout layout = new VerticalLayout();
         layout.setWidthFull();
+        layout.setHeightFull();
         layout.setVisible(false);
         layout.add(fileList, compareLayout);
 
@@ -204,24 +185,41 @@ public class ObfuscateView extends Div {
 
         HorizontalLayout layout = new HorizontalLayout();
         layout.setWidthFull();
-        layout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        layout.setJustifyContentMode(JustifyContentMode.CENTER);
         layout.setVisible(false);
         layout.add(download);
 
         return layout;
     }
 
-    private HorizontalLayout createMarginLayout() {
+    private HorizontalLayout createMarginLayout(Alignment alignment) {
         HorizontalLayout layout = new HorizontalLayout();
         layout.setHeight("100px");
+        layout.setAlignSelf(alignment);
         return layout;
     }
 
-    private Button createHeaderButton(String text) {
-        Button button = new Button(text);
-        button.setClassName("header-button");
-        button.addThemeNames("contrast secondary");
-        return button;
+    private HorizontalLayout createNavigationLayout() {
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.setId("nav_container");
+
+        previous.setId("nav_button_prev");
+        next.setId("nav_button_next");
+        previous.addThemeNames("contrast secondary");
+        next.addThemeNames("primary");
+        previous.setIcon(new Icon(VaadinIcon.ARROW_LEFT));
+        next.setIcon(new Icon(VaadinIcon.ARROW_RIGHT));
+        next.setIconAfterText(true);
+        previous.setVisible(false);
+
+        layout.add(previous, next);
+        return layout;
+    }
+
+    private VerticalLayout createCheckBoxContainer() {
+        VerticalLayout container = new VerticalLayout();
+        container.addClassName("checkbox-container");
+        return container;
     }
 
     private Checkbox createTechniqueCheckbox(String text, Boolean isChecked) {

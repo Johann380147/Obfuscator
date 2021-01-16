@@ -8,7 +8,7 @@ public class ObfuscateModel implements Model<ObfuscateModel> {
     private final HashMap<String, Boolean> techniques;
 
     public ObfuscateModel() {
-        techniques = new HashMap() {{
+        techniques = new HashMap<String, Boolean>() {{
             put("Technique 1", true);
             put("Technique 2", true);
             put("Technique 3", true);

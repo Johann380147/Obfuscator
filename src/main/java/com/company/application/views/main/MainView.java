@@ -33,24 +33,24 @@ import com.company.application.views.obfuscate.ObfuscateView;
 @JsModule("./styles/shared-styles.js")
 public class MainView extends AppLayout {
     private static MainView mainView = null;
-    private final Tabs menu;
     private final ProgressBar progress;
 
     public MainView() {
-        menu = createMenuTabs();
         HorizontalLayout header = createHeader();
-        VerticalLayout bar = createProgressBar();
-        progress = (ProgressBar) bar.getChildren().filter(child -> child.getId().get().equals("progress")).findFirst().get();
+        VerticalLayout widget = createProgressWidget();
+        progress = createProgressBar();
+        widget.add(progress);
+
         mainView = this;
-        addToNavbar(createTopBar(header, bar));
+        addToNavbar(createTopBar(header, widget));
     }
 
     public static MainView getInstance() {
         return mainView;
     }
 
-    public void setProgress(int value) {
-        progress.setValue(value);
+    public ProgressBar getProgress() {
+        return progress;
     }
 
     private VerticalLayout createTopBar(HorizontalLayout header, VerticalLayout bar) {
@@ -82,78 +82,49 @@ public class MainView extends AppLayout {
         return header;
     }
 
-    private VerticalLayout createProgressBar() {
+    private VerticalLayout createProgressWidget() {
         final VerticalLayout layout = new VerticalLayout();
-        layout.setId("progress_layout");
         layout.setWidth("50%");
+        final Div labels = createProgressLabels();
+        layout.add(labels);
 
-        final Div labels = new Div();
-        labels.setId("progress_labels");
-        labels.setWidth("100%");
-        final Span label1 = new Span();
-        final Span label2 = new Span();
-        final Span label3 = new Span();
-        final Span label4 = new Span();
-        Icon icon1 = new Icon(VaadinIcon.UPLOAD_ALT);
-        Icon icon2 = new Icon(VaadinIcon.CURSOR);
-        Icon icon3 = new Icon(VaadinIcon.CHECK_CIRCLE);
-        Icon icon4 = new Icon(VaadinIcon.DOWNLOAD_ALT);
-        icon1.setSize("16px");
-        icon2.setSize("16px");
-        icon3.setSize("16px");
-        icon4.setSize("16px");
-        H6 h1 = new H6("Upload");
-        H6 h2 = new H6("Select");
-        H6 h3 = new H6("Review");
-        H6 h4 = new H6("Download");
-        h1.setId("progress_label_text_1");
-        h2.setId("progress_label_text_2");
-        h3.setId("progress_label_text_3");
-        h4.setId("progress_label_text_4");
-        label1.add(icon1, h1);
-        label2.add(icon2, h2);
-        label3.add(icon3, h3);
-        label4.add(icon4, h4);
-        labels.add(label1, label2, label3, label4);
+        return layout;
+    }
 
+    private ProgressBar createProgressBar() {
         final ProgressBar bar = new ProgressBar();
         bar.setId("progress");
-        bar.setWidth("100%");
+        bar.setWidthFull();
         bar.setMin(0);
         bar.setMax(4);
         bar.setValue(1);
 
-        layout.add(labels, bar);
-        return layout;
+        return bar;
     }
 
-    private static Tabs createMenuTabs() {
-        final Tabs tabs = new Tabs();
-        tabs.getStyle().set("max-width", "100%");
-        tabs.add(getAvailableTabs());
-        return tabs;
+    private Div createProgressLabels() {
+        final Div labels = new Div();
+        labels.setId("progress_labels");
+        labels.setWidthFull();
+
+        final Span label1 = createProgressHeaders("progress_label_text", "Upload", VaadinIcon.UPLOAD_ALT);
+        final Span label2 = createProgressHeaders("progress_label_text", "Select", VaadinIcon.CURSOR);
+        final Span label3 = createProgressHeaders("progress_label_text", "Review", VaadinIcon.CHECK_CIRCLE);
+        final Span label4 = createProgressHeaders("progress_label_text", "Download", VaadinIcon.DOWNLOAD_ALT);
+        labels.add(label1, label2, label3, label4);
+
+        return labels;
     }
 
-    private static Tab[] getAvailableTabs() {
-        return new Tab[]{createTab("Obfuscate", ObfuscatePresenter.class)};
-    }
+    private Span createProgressHeaders(String cls, String text, VaadinIcon icon) {
+        final Span span = new Span();
+        final Icon headerIcon = new Icon(icon);
+        final H6 headerText = new H6(text);
 
-    private static Tab createTab(String text, Class<? extends Component> navigationTarget) {
-        final Tab tab = new Tab();
-        tab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
-        tab.add(new RouterLink(text, navigationTarget));
-        ComponentUtil.setData(tab, Class.class, navigationTarget);
-        return tab;
-    }
+        headerIcon.setSize("16px");
+        headerText.addClassName(cls);
+        span.add(headerIcon, headerText);
 
-    @Override
-    protected void afterNavigation() {
-        super.afterNavigation();
-        getTabForComponent(getContent()).ifPresent(menu::setSelectedTab);
-    }
-
-    private Optional<Tab> getTabForComponent(Component component) {
-        return menu.getChildren().filter(tab -> ComponentUtil.getData(tab, Class.class).equals(component.getClass()))
-                .findFirst().map(Tab.class::cast);
+        return span;
     }
 }
