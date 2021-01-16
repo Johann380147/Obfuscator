@@ -3,10 +3,8 @@
 }
 
 #nav_container {
-    width: 100%;
     padding-left: 3%;
     padding-right: 3%;
-    justify-content: space-between;
 }
 
 #nav_button_prev,
@@ -16,18 +14,10 @@
     width: 20%;
 }
 
-#nav_button_prev {
-    position: absolute;
-}
-
-#nav_button_next {
-
-}
-
 .checkbox-container {
     align-items: center;
 }
 
 #file_list {
-    margin-left: 10%;
+    margin-left: 5%;
 }

@@ -1,18 +1,16 @@
 package com.company.application.views.obfuscate;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.listbox.ListBox;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.component.upload.Upload;
-import com.vaadin.flow.component.checkbox.Checkbox;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +25,7 @@ public class ObfuscateView extends VerticalLayout {
     private final HorizontalLayout downloadContainer;
 
     private final Upload upload = new Upload();
-    private final ListBox fileList = new ListBox();
+    private final TreeGrid fileList = new TreeGrid();
     private final TextArea before = new TextArea();
     private final TextArea after = new TextArea();
     private final Button download = new Button();
@@ -91,6 +89,10 @@ public class ObfuscateView extends VerticalLayout {
         return next;
     }
 
+    public Button getDownload() {
+        return download;
+    }
+
     public HorizontalLayout getUploadContainer() {
         return uploadContainer;
     }
@@ -111,7 +113,7 @@ public class ObfuscateView extends VerticalLayout {
         return upload;
     }
 
-    public ListBox getFileList() {
+    public TreeGrid getFileList() {
         return fileList;
     }
 
@@ -163,10 +165,11 @@ public class ObfuscateView extends VerticalLayout {
 
         HorizontalLayout compareLayout = new HorizontalLayout();
         compareLayout.setWidthFull();
-        compareLayout.setHeight("400px");
+        compareLayout.setHeightFull();
+        compareLayout.setMinHeight("400px");
         compareLayout.setAlignItems(Alignment.CENTER);
         compareLayout.setJustifyContentMode(JustifyContentMode.CENTER);
-        compareLayout.add(before, after);
+        compareLayout.add(before, new Icon(VaadinIcon.ARROW_RIGHT), after);
 
         VerticalLayout layout = new VerticalLayout();
         layout.setWidthFull();
@@ -202,6 +205,9 @@ public class ObfuscateView extends VerticalLayout {
     private HorizontalLayout createNavigationLayout() {
         HorizontalLayout layout = new HorizontalLayout();
         layout.setId("nav_container");
+        layout.setWidthFull();
+        layout.setSpacing(false);
+        layout.setJustifyContentMode(JustifyContentMode.BETWEEN);
 
         previous.setId("nav_button_prev");
         next.setId("nav_button_next");
@@ -210,7 +216,7 @@ public class ObfuscateView extends VerticalLayout {
         previous.setIcon(new Icon(VaadinIcon.ARROW_LEFT));
         next.setIcon(new Icon(VaadinIcon.ARROW_RIGHT));
         next.setIconAfterText(true);
-        previous.setVisible(false);
+        previous.setEnabled(false);
 
         layout.add(previous, next);
         return layout;

@@ -163,6 +163,16 @@
             <artifactId>compani</artifactId>
             <version>1.1.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin</groupId>
+            <artifactId>flow-viritin</artifactId>
+            <version>0.3.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bitbucket.mstrobel</groupId>
+            <artifactId>procyon-compilertools</artifactId>
+            <version>0.5.36</version>
+        </dependency>
     </dependencies>
 
     <build>
