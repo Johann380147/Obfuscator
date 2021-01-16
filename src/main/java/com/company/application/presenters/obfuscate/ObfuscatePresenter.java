@@ -133,7 +133,6 @@ public class ObfuscatePresenter extends Presenter<ObfuscateModel, ObfuscateView>
         int oldId = StringUtil.ToInteger(oldComponent.getId().get(), 1);
         int newId = StringUtil.ToInteger(newComponent.getId().get(), 1);
 
-        Notification.show("old: " + oldId + ", new: " + newId);
         currentComponent = newComponent;
 
         if (oldId == newId)
