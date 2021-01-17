@@ -46,6 +46,10 @@ public class ObfuscateModel implements Model<ObfuscateModel> {
         return service.getFiles(ids);
     }
 
+    public void deleteFiles(Iterable<Integer> ids) {
+        service.deleteMultiple(ids);
+    }
+
     public void setService(FileService service) {
         this.service = service;
     }

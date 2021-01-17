@@ -1,5 +1,10 @@
 package com.company.application.views.obfuscate;
 
+import com.company.application.classes.EmptySerializableConsumer;
+import com.company.application.components.DownloadAnchor;
+import com.company.application.components.FileUpload;
+import com.vaadin.flow.component.ComponentEvent;
+import com.vaadin.flow.component.DomEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -11,6 +16,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.component.upload.Upload;
+import org.vaadin.firitin.components.DynamicFileDownloader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,11 +30,13 @@ public class ObfuscateView extends VerticalLayout {
     private final VerticalLayout reviewContainer;
     private final HorizontalLayout downloadContainer;
 
-    private final Upload upload = new Upload();
+    private final FileUpload upload = new FileUpload();
     private final TreeGrid fileList = new TreeGrid();
     private final TextArea before = new TextArea();
     private final TextArea after = new TextArea();
     private final Button download = new Button();
+    private final Button dummyDownload = new Button();
+    private final DownloadAnchor anchor = new DownloadAnchor();
 
     private final Button previous = new Button("Previous");
     private final Button next = new Button("Next");
@@ -93,6 +101,12 @@ public class ObfuscateView extends VerticalLayout {
         return download;
     }
 
+    public Button getDummyDownload() {
+        return dummyDownload;
+    }
+
+    public DownloadAnchor getAnchor() { return anchor; }
+
     public HorizontalLayout getUploadContainer() {
         return uploadContainer;
     }
@@ -109,7 +123,7 @@ public class ObfuscateView extends VerticalLayout {
         return downloadContainer;
     }
 
-    public Upload getUpload() {
+    public FileUpload getUpload() {
         return upload;
     }
 
@@ -131,9 +145,11 @@ public class ObfuscateView extends VerticalLayout {
     }
 
     private HorizontalLayout createUploadLayout() {
+        upload.setId("upload");
+        upload.setMaxFiles(30);
         upload.setAcceptedFileTypes(".class");
         upload.setDropLabel(new Label("Drop \".class\" files here"));
-        upload.setMaxFileSize(100000000);
+        upload.setMaxFileSize(10000000);
         upload.setWidth("50%");
 
         HorizontalLayout layout = new HorizontalLayout();
@@ -181,16 +197,26 @@ public class ObfuscateView extends VerticalLayout {
     }
 
     private HorizontalLayout createDownloadLayout() {
+        download.setWidthFull();
         download.setText("Download Files");
         download.addThemeName("primary");
         download.setIcon(new Icon(VaadinIcon.DOWNLOAD_ALT));
-        download.setWidth("30%");
+        anchor.setWidth("30%");
+        anchor.add(download);
+
+        dummyDownload.setWidth("30%");
+        dummyDownload.setText("Download Files");
+        dummyDownload.addThemeName("primary");
+        dummyDownload.setIcon(new Icon(VaadinIcon.DOWNLOAD_ALT));
+        dummyDownload.setEnabled(false);
+        dummyDownload.setVisible(false);
 
         HorizontalLayout layout = new HorizontalLayout();
         layout.setWidthFull();
+        layout.setSpacing(false);
         layout.setJustifyContentMode(JustifyContentMode.CENTER);
         layout.setVisible(false);
-        layout.add(download);
+        layout.add(anchor, dummyDownload);
 
         return layout;
     }

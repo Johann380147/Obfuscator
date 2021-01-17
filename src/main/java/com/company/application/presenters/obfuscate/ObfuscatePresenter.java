@@ -1,21 +1,23 @@
 package com.company.application.presenters.obfuscate;
 
+import com.company.application.classes.EmptySerializableConsumer;
+import com.company.application.classes.Logger;
 import com.company.application.classes.Presenter;
 import com.company.application.data.entity.File;
 import com.company.application.data.service.FileService;
 import com.company.application.models.obfuscate.ObfuscateModel;
+import com.company.application.utils.FileUtil;
 import com.company.application.utils.StringUtil;
 import com.company.application.views.main.MainView;
 import com.company.application.views.obfuscate.ObfuscateView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.flow.server.StreamResource;
 import de.mekaso.vaadin.addon.compani.AnimatedComponent;
 import de.mekaso.vaadin.addon.compani.Animator;
 import de.mekaso.vaadin.addon.compani.animation.Animation;
@@ -24,15 +26,13 @@ import de.mekaso.vaadin.addon.compani.animation.AnimationTypes;
 import de.mekaso.vaadin.addon.compani.effect.EntranceEffect;
 import org.apache.commons.io.IOUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.util.logging.Level;
 
 
 @PageTitle("Obfuscate")
@@ -45,7 +45,7 @@ public class ObfuscatePresenter extends Presenter<ObfuscateModel, ObfuscateView>
     private final ObfuscateModel model;
 
     private final ArrayList<Checkbox> checkboxes;
-    private final ArrayList<Integer> uploadedFileIds = new ArrayList<>();
+    private final HashMap<Integer, String> uploadedFileIds = new HashMap<>();
     private Component currentComponent;
 
     public ObfuscatePresenter(FileService service) {
@@ -54,11 +54,17 @@ public class ObfuscatePresenter extends Presenter<ObfuscateModel, ObfuscateView>
         model = getModel();
         model.setService(service);
 
-        currentComponent = view.getUploadContainer();
-
         checkboxes = view.setTechniques(model.getTechniques());
-        view.setFileListItems(new ArrayList<String>() {{ add("Sample File 1"); add("Sample File 2"); }});
+
+        InitDefaultComponentParameters();
         InitListeners();
+    }
+
+    private void InitDefaultComponentParameters() {
+        setEnableDownload(false);
+        view.getAnchor().setSuffix(".zip");
+        view.setFileListItems(new ArrayList<String>() {{ add("Sample File 1"); add("Sample File 2"); }});
+        currentComponent = view.getUploadContainer();
     }
 
     private void InitListeners() {
@@ -83,10 +89,23 @@ public class ObfuscatePresenter extends Presenter<ObfuscateModel, ObfuscateView>
                         event.getMIMEType(),
                         IOUtils.toByteArray(in),
                         LocalDateTime.now());
-                uploadedFileIds.add(id);
+                uploadedFileIds.put(id, event.getFileName());
+                setEnableDownload(true);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        });
+        view.getUpload().addStartedListener(event -> {
+            if (uploadedFileIds.containsValue(event.getFileName())) {
+                event.getUpload().interruptUpload();
+                Notification.show("Files cannot have same name and must be < 10mb", 4000, Notification.Position.MIDDLE);
+            }
+        });
+        view.getUpload().addFileRejectedListener(event -> {
+            Notification.show("Files cannot have same name and must be < 10mb", 4000, Notification.Position.MIDDLE);
+        });
+        view.getUpload().addFileRemoveListener(event -> {
+            clearAll(true);
         });
     }
 
@@ -94,9 +113,9 @@ public class ObfuscatePresenter extends Presenter<ObfuscateModel, ObfuscateView>
         for (Checkbox checkbox : checkboxes) {
             checkbox.addValueChangeListener(event -> {
                 if (event.getValue() == null) {
-                    model.getTechniques().replace(checkbox.getLabel(), false);
+                    model.getTechniques().put(checkbox.getLabel(), false);
                 } else {
-                    model.getTechniques().replace(checkbox.getLabel(), true);
+                    model.getTechniques().put(checkbox.getLabel(), true);
                 }
             });
         }
@@ -112,25 +131,33 @@ public class ObfuscatePresenter extends Presenter<ObfuscateModel, ObfuscateView>
 
     private void addDownloadListener() {
         view.getDownload().addClickListener(event -> {
-
-           /* List<File> files = model.getFiles(uploadedFileIds);
-            FileOutputStream fos = new FileOutputStream("multiCompressed.zip");
-            ZipOutputStream zipOut = new ZipOutputStream(fos);
-            for (File file : files) {
-                 new ByteArrayInputStream(file.getData());
-                ZipEntry zipEntry = new ZipEntry(file.getFileName());
-                zipOut.putNextEntry(zipEntry);
-
-                byte[] bytes = new byte[1024];
-                int length;
-                while((length = fis.read(bytes)) >= 0) {
-                    zipOut.write(bytes, 0, length);
-                }
-                fis.close();
+            if (uploadedFileIds.size() == 0) {
+                Notification.show(
+                        "There are either no files uploaded or they have expired.\nUploaded files will expire every 2 hours",
+                        5000,
+                        Notification.Position.MIDDLE);
+                return;
             }
-            zipOut.close();
-            fos.close();
-            Anchor anchor = new Anchor(new StreamResource("filename.class", ByteArrayInputStream()));*/
+
+            List<File> files = model.getFiles(uploadedFileIds.keySet());
+            if (files.size() == 0) {
+                Notification.show(
+                        "There are either no files uploaded or they have expired.\nUploaded files will expire every 2 hours",
+                        5000,
+                        Notification.Position.MIDDLE);
+                clearAll(false);
+            }
+            else {
+                view.getAnchor().setFileHandler(
+                    outputStream -> {
+                        try {
+                            byte[] stream = FileUtil.createZipByteArray(files);
+                            outputStream.write(stream);
+                        } catch (IOException ex) {
+                            Logger.log(this.getClass().toString(), Level.SEVERE, ex);
+                        }
+                    });
+            }
         });
     }
 
@@ -189,6 +216,26 @@ public class ObfuscatePresenter extends Presenter<ObfuscateModel, ObfuscateView>
             return view.getDownloadContainer();
         else
             return view.getUploadContainer();
+    }
+
+    private void clearAll(Boolean deleteFilesFromRepository) {
+        view.getUpload().getElement().executeJs("this.files=[]");
+        setEnableDownload(false);
+
+        // Files that were not deleted will still be cleaned up in a scheduled task that deletes all files older than 2hrs
+        if (deleteFilesFromRepository) {
+            model.deleteFiles(uploadedFileIds.keySet());
+        }
+        uploadedFileIds.clear();
+    }
+
+    private void setEnableDownload(Boolean isEnabled) {
+        view.getDummyDownload().setVisible(!isEnabled);
+        view.getAnchor().setVisible(isEnabled);
+
+        if (isEnabled == false) {
+            view.getAnchor().setFileHandler(new EmptySerializableConsumer());
+        }
     }
 
     private void animateEntranceExit(Component oldComponent, Component newComponent) {
